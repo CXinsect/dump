@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include <termios.h>
+#include <unistd.h>
 typedef struct list{
 	int number;
 	char name[8];
@@ -16,6 +18,9 @@ char *subject[] = {"chinese","math","english"};
 int count_stu = 0;
 int menu(void);
 PNODE append_stu(void);
+void logout(void);
+int getch(void);
+void select_menu(void);
 void delate_stu(PNODE);
 void save_stu(PNODE);
 void read_stu(void);
@@ -33,9 +38,7 @@ int  length_stu(PNODE p);
 void copy_stu(PNODE,PNODE);
 int main (int argc ,char * argv[])
 {
-	int c;
-	int m = menu();
-	select_stu(m);
+	logout();
 	return 0;
 }
 PNODE  append_stu(void)
@@ -115,6 +118,7 @@ int menu(void)
         printf("\t\t***************please enter your choices (1 - 10)*****************8\n");
 	printf("==========================================================================\n");
 	printf("Any Number button to continue.....\n");
+ 	//select_menu();
 	scanf("%d",&choice);
 	while(1)
 	{
@@ -122,7 +126,7 @@ int menu(void)
 			break;
 		else
 		{
-			printf("your choice is wrong ,please enter (1 - 9)\n");
+			printf("your choice is wrong ,please enter (1 - 10)\n");
 			scanf("%d",&choice);
 		}
 	}
@@ -192,7 +196,7 @@ void select_stu(int c)
 		       save_stu(pHead);
 		       break;
 		case 8:
-		       read_stu();
+		      	read_stu();
 		       break;
 		case 9:
 		       traverse_stu(pHead);
@@ -337,7 +341,7 @@ void save_stu(PNODE pH)
 	FILE *fp;
 	PNODE p = pH->pRight;
 	int i;
-	printf("please enterthe file name\n");
+
 	if((fp = fopen("/tmp/test1","w")) == NULL)
 	{
 		printf("the file opne is wrong\n");
@@ -354,7 +358,7 @@ void read_stu(void)
 {
 	char filename[15];
 	FILE *fp;
-	int i;
+	int i,m;
 	long pos;
 	char ch;
 	PNODE pHead = (PNODE)malloc(sizeof(NODE));
@@ -369,6 +373,8 @@ void read_stu(void)
 		printf("the file read is wrong\n");
 		exit(0);
 	}
+	if(!feof(fp))
+	{
 	pHead->pLeft = NULL;
 	pHead->pRight = NULL;
 	PNODE pTail = pHead;
@@ -391,11 +397,17 @@ void read_stu(void)
 	printf("If you want to change information in the file(y - n)\n");
 	scanf("%c",&ch);
 	if( ch == 'Y' || ch == 'y'){
-		modief_stu(pHead);
-	        save_stu(pHead);
+		m = menu();
+		select_stu(m);
 	}
 	else
 		return;
+	}
+	else{
+		printf("please enter the date first\n");
+		m = menu();
+		select_stu(m);
+	}
 	return;
 }
 void insert_stu(PNODE pH)
@@ -893,4 +905,122 @@ void file_append(void)
 			save_stu(pHead);
 	}
 	return;
+}
+void logout(void)
+{
+	FILE *fp1,*fp2;
+	char name[8];
+	char mm[9];
+	char st[8];
+	char m[9];
+	int i,c;
+	char ch;
+	printf("Do you a new member?(Y-N)\n");
+	scanf("%c",&ch);
+	if( ch == 'Y' || ch == 'y')
+	{
+		if((fp1 = fopen("/tmp/temp","w")) == NULL)
+		{
+			printf("The file opening is wrong\n");
+			return;
+		}
+		if((fp2 = fopen("/tmp/temp1","w")) == NULL)
+		{
+			printf("The file opening is wrong\n");
+			return;
+		}
+		printf("Please enter your user name\n");
+		scanf("%s",name);
+		while(getchar() != '\n')
+			continue;
+		printf("Please enter the safe codes(8 bits)\n");
+		for(i = 0;i<8;i++)
+		{
+			mm[i] = getch();
+			if(mm[i] == '\x0d')
+			{
+				mm[i] = '\0';
+				break;
+			}
+			putchar('*');
+	   	 fwrite(&mm[i],sizeof(char),1,fp2);
+		}
+           	 fprintf(fp1,"%s",name);
+		 printf("\n");
+	     	 read_stu();
+	}
+	else
+	{
+		if((fp1 = fopen("/tmp/temp","r")) == NULL)
+		{
+		printf("The file opening is wrong\n");
+		return;
+		}
+		if((fp2 = fopen("/tmp/temp1","r")) == NULL)
+		{
+			printf("The file opening is wrong\n");
+			return;
+		}
+		printf("please enter the user name\n");
+		scanf("%s",name);
+		while(!feof(fp1) && !feof(fp2))
+		{
+			fscanf(fp1,"%s",st);
+			if(strcmp(st,name) == 0)
+			{
+		           fscanf(fp2,"%s",m);
+			   while(getchar() != '\n')
+				   continue;
+                           printf("please enter the safe code(8 bits)\n");
+				for(i = 0;i<8;i++)
+				{
+				mm[i] = getch();
+				if(mm[i] == '\x0d')
+				{
+				mm[i] = '\0';
+				break;
+				}
+				putchar('*');
+				}
+			   while(getchar() != '\n')
+				   continue;
+			   if(strcmp(mm,m) == 0){
+				read_stu();
+			   }
+			   else
+			   {
+				   printf("The code is wrong\n");
+				   fclose(fp1);
+				   fclose(fp2);
+				   exit(1);
+			   }
+			}
+			fscanf(fp1,"%s",st);
+		}
+		fclose(fp1);
+		fclose(fp2);
+	}
+
+}
+int getch(void)
+{
+     struct termios tm, tm_old;
+     int fd = 0, ch;
+
+     if (tcgetattr(fd, &tm) < 0) {//保存现在的终端设置
+          return -1;
+     }
+
+     tm_old = tm;
+     cfmakeraw(&tm);//更改终端设置为原始模式，该模式下所有的输入数据以字节为单位被处理
+     if (tcsetattr(fd, TCSANOW, &tm) < 0) {//设置上更改之后的设置
+          return -1;
+     }
+
+     ch = getchar();
+     if (tcsetattr(fd, TCSANOW, &tm_old) < 0) {//更改设置为最初的样子
+          return -1;
+     }
+
+     return ch;
 }
