@@ -1,5 +1,5 @@
-a.out:	main.o append_stu.o menu.o traverse_stu.o show_table.o delate_stu.o save_stu.o read_stu.o insert_stu.o  file_append.o find_stu.o exit_stu.o sort_stu.o modief_stu.o getindex.o select_stu.o length_stu.o copy_stu.o
-	gcc main.o append_stu.o menu.o traverse_stu.o show_table.o delate_stu.o save_stu.o read_stu.o insert_stu.o  file_append.o find_stu.o exit_stu.o sort_stu.o modief_stu.o getindex.o select_stu.o length_stu.o copy_stu.o
+a.out:	main.o append_stu.o menu.o traverse_stu.o show_table.o delate_stu.o save_stu.o read_stu.o insert_stu.o  find_stu.o exit_stu.o sort_stu.o modief_stu.o getindex.o getindexs.o select_stu.o length_stu.o copy_stu.o logout.o getch.o
+	gcc main.o append_stu.o menu.o traverse_stu.o show_table.o delate_stu.o save_stu.o read_stu.o insert_stu.o find_stu.o exit_stu.o sort_stu.o modief_stu.o getindex.o getindexs.o  select_stu.o length_stu.o copy_stu.o logout.o getch.o
 main.o:main.c student.h
 	gcc -c main.c
 append_stu.o:append_stu.c student.h
@@ -18,8 +18,6 @@ read_stu.o:read_stu.c student.h
 	gcc -c read_stu.c
 insert_stu.o:insert_stu.c student.h
 	gcc -c insert_stu.c
-file_append.o:file_append.c student.h
-	gcc -c file_append.c
 find_stu.o:find_stu.c student.h
 	gcc -c find_stu.c
 exit_stu.o:exit_stu.c student.h
@@ -34,3 +32,9 @@ length_stu.o:length_stu.c student.h
 	gcc -c length_stu.c
 copy_stu.o:copy_stu.c student.h
 	gcc -c copy_stu.c
+logout.o:logout.c student.h
+	gcc -c logout.c
+getch.o:getch.c student.h
+	gcc -c getch.c
+getindexs:getindexs.c student.h
+	gcc -c getindexs.c
