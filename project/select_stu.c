@@ -41,20 +41,20 @@ void select_stu(int c)
 			       printf("error\n");
 			       break;
 		}
-		menu();
+		c = menu();
 		printf("Are your want to be Continued.....?(Y-N)\n");
+		while(getchar() != '\n')
+			continue;
 		scanf("%c",&ch);
 		if( ch == 'N' || ch == 'n')
 			break;
-		printf("please enter your choice\n");
-		scanf("%d",&c);
 		if(c < 0 || c > 10)
 		{
 			printf("your choice is wrong ,please enter (1 - 10)\n");
 			scanf("%d",&c);
 		}
 	}
-	while(getchar() != '\n')
-		continue;
+/*	while(getchar() != '\n')
+		continue;*/
 
 }

@@ -43,12 +43,12 @@ void read_stu(void)
 	printf("If you want to change information in the file(y - n)\n");
 	scanf("%c",&ch);
 	if( ch == 'Y' || ch == 'y'){
-	printf("\t\t*********1.delate student information****************\n");
-	printf("\t\t*********2.modief student information****************\n");
+	printf("\t\t*********1.delete student information****************\n");
+	printf("\t\t*********2.modify student information****************\n");
 	printf("\t\t*********3.insert student information****************\n");
 	printf("\t\t*********4.find   student information****************\n");
 	printf("\t\t*********5.sort   student information****************\n");
-	printf("\t\t*********6.save   student information****************\n");
+	printf("\t\t*********6.load   student information****************\n");
 	printf("\t\t*********7.traverse student information**************\n");
 	scanf("%d",&m);
 	while(1)

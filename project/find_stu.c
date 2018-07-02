@@ -35,7 +35,7 @@ void find_stu(PNODE pH)
                                printf("%d\t%s\t%c\t",p->number,p->name,p->gender);
 		               for(i = 0;i<3;i++)
 			       printf("%.0lf\t",p->score[i]);
-		               printf("%.0lf\t%.0lf\t%d",p->sum,p->average,p->index);	
+		               printf("%.0lf\t%.0lf\t%d\n",p->sum,p->average,p->index);	
 			}
 			p = p->pRight;
 		}
@@ -57,7 +57,7 @@ void find_stu(PNODE pH)
     		printf("%d\t%s\t%c\t",p->number,p->name,p->gender);
 		for(i = 0;i<3;i++)
 			printf("%.0lf\t",p->score[i]);
-		printf("%.0lf\t%.0lf\t%d",p->sum,p->average,p->index);
+		printf("%.0lf\t%.0lf\t%d\n",p->sum,p->average,p->index);
 
  			}
 			p = p->pRight;
@@ -79,7 +79,7 @@ void find_stu(PNODE pH)
     		printf("%d\t%s\t%c\t",p->number,p->name,p->gender);
 		for(i = 0;i<3;i++)
 			printf("%.0lf\t",p->score[i]);
-		printf("%.0lf\t%.0lf\t%d",p->sum,p->average,p->index);
+		printf("%.0lf\t%.0lf\t%d\n",p->sum,p->average,p->index);
 			}
 			p = p->pRight;
 		}

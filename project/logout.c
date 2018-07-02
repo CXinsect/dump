@@ -12,12 +12,12 @@ void logout(void)
 	scanf("%c",&ch);
 	if( ch == 'Y' || ch == 'y')
 	{
-		if((fp1 = fopen("/tmp/temp","w")) == NULL)
+		if((fp1 = fopen("/tmp/temp","at")) == NULL)
 		{
 			printf("The file opening is wrong\n");
 			return;
 		}
-		if((fp2 = fopen("/tmp/temp1","w")) == NULL)
+		if((fp2 = fopen("/tmp/temp1","at")) == NULL)
 		{
 			printf("The file opening is wrong\n");
 			return;
@@ -36,21 +36,24 @@ void logout(void)
 			break;
 			}
 			mm[i] = ch;
-	   	 fwrite(&mm[i],sizeof(char),1,fp2);
+		//	fwrite(&mm[i],sizeof(char),1,fp2);
+			fprintf(fp2,"%c",mm[i]);
 		}
+			fputc('\n',fp2);
            	 fprintf(fp1,"%s",name);
+		 fputc('\n',fp1);
 		 printf("\n");
-		c =  menu();
-		select_stu(c);
+		fclose(fp1);
+		fclose(fp2);
 	}
 	else
 	{
-		if((fp1 = fopen("/tmp/temp","r")) == NULL)
+		if((fp1 = fopen("/tmp/temp","rt")) == NULL)
 		{
 		printf("The file opening is wrong\n");
 		return;
 		}
-		if((fp2 = fopen("/tmp/temp1","r")) == NULL)
+		if((fp2 = fopen("/tmp/temp1","rt")) == NULL)
 		{
 			printf("The file opening is wrong\n");
 			return;
@@ -77,7 +80,9 @@ void logout(void)
 				putchar('*');
 				}
 			   if(strcmp(mm,m) == 0){
-				read_stu();
+				   printf("The code is right\n");
+		fclose(fp1);
+		fclose(fp2);
 			   }
 			   else
 			   {
@@ -89,8 +94,8 @@ void logout(void)
 			}
 			fscanf(fp1,"%s",st);
 		}
-		fclose(fp1);
-		fclose(fp2);
 	}
+		c =  menu();
+		select_stu(c);
 
 }
