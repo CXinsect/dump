@@ -40,6 +40,8 @@ void read_stu(void)
 	pTail->pRight = pHead;
 	fclose(fp);
 	traverse_stu(pHead);
+	while(getchar() != '\n')
+		continue;
 	printf("If you want to change information in the file(y - n)\n");
 	scanf("%c",&ch);
 	if( ch == 'Y' || ch == 'y'){

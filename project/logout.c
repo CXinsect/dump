@@ -60,42 +60,55 @@ void logout(void)
 		}
 		printf("please enter the user name\n");
 		scanf("%s",name);
-		while(!feof(fp1) && !feof(fp2))
+		while(!feof(fp1))
 		{
 			fscanf(fp1,"%s",st);
 			if(strcmp(st,name) == 0)
 			{
-		           fscanf(fp2,"%s",m);
-			   while(getchar() != '\n')
+				     fscanf(fp2,"%s",m);
+				   while(getchar() != '\n')
 				   continue;
-                           printf("please enter the safe code(8 bits)\n");
-				for(i = 0;i<9;i++)
-				{
-				mm[i] = getch();
-				if(mm[i] == '\x0d')
-				{
-				mm[i] = '\0';
-				break;
-				}
-				putchar('*');
-				}
-			   if(strcmp(mm,m) == 0){
-				   printf("The code is right\n");
-		fclose(fp1);
-		fclose(fp2);
-			   }
-			   else
-			   {
-				   printf("The code is wrong\n");
-				   fclose(fp1);
-				   fclose(fp2);
-				   exit(1);
-			   }
+                       		   printf("please enter the safe code(8 bits)\n");
+					for(i = 0;i<9;i++)
+					{
+						mm[i] = getch();
+						if(mm[i] == '\x0d')
+						{
+							mm[i] = '\0';
+							break;
+						}
+							putchar('*');
+					}
+						while(!feof(fp2))
+						{
+				    			 fscanf(fp2,"%s",m);
+						  	 if(strcmp(mm,m) == 0)
+						 	  {
+								       printf("The code is right\n");
+									fclose(fp1);
+									fclose(fp2);
+									break;
+			   		       	 	  } 
+						   	else
+								   continue;
+						}
+						if(feof(fp2))
+						{	
+							printf("The code is wrong\n");
+							exit(1);
+						}
 			}
-			fscanf(fp1,"%s",st);
+			else
+				continue;
+		}
+		if(feof(fp1))
+		{
+			printf("You are a new member\n");
+			exit(1);
 		}
 	}
 		c =  menu();
 		select_stu(c);
 
 }
+
