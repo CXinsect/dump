@@ -32,9 +32,12 @@ void select_stu(int c)
 			       read_stu();
 			       break;
 			case 9:
-			       traverse_stu(pHead);
+			       clear(pHead);
 			       break;
 			case 10:
+			       traverse_stu(pHead);
+			       break;
+			case 11:
 			       exit_stu(pHead);
 			       break;
 			default:
@@ -48,9 +51,9 @@ void select_stu(int c)
 		scanf("%c",&ch);
 		if( ch == 'N' || ch == 'n')
 			break;
-		if(c < 0 || c > 10)
+		if(c < 0 || c > 11)
 		{
-			printf("your choice is wrong ,please enter (1 - 10)\n");
+			printf("your choice is wrong ,please enter (1 - 11)\n");
 			scanf("%d",&c);
 		}
 	}

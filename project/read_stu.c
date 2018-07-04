@@ -51,15 +51,16 @@ void read_stu(void)
 	printf("\t\t*********4.find   student information****************\n");
 	printf("\t\t*********5.sort   student information****************\n");
 	printf("\t\t*********6.load   student information****************\n");
-	printf("\t\t*********7.traverse student information**************\n");
+	printf("\t\t*********7.clear  student information****************\n");
+	printf("\t\t*********8.traverse student information**************\n");
 	scanf("%d",&m);
 	while(1)
 	{
-		if(m > 0 && m <= 7)
+		if(m > 0 && m <= 8)
 			break;
 		else
 		{
-			printf("your choice is wrong ,please enter (1 - 7)\n");
+			printf("your choice is wrong ,please enter (1 - 8)\n");
 			scanf("%d",&m);
 		}
 	}
@@ -87,6 +88,9 @@ void read_stu(void)
 		       save_stu(pHead);
 		       break;
 		case 7:
+		       clear(pHead);
+		       break;
+		case 8:
 		       traverse_stu(pHead);
 		       break;
 		default:
@@ -101,16 +105,17 @@ void read_stu(void)
 	printf("\t\t*********4.find   student information****************\n");
 	printf("\t\t*********5.sort   student information****************\n");
 	printf("\t\t*********6.save   student information****************\n");
-	printf("\t\t*********7.traverse student information**************\n");
+	printf("\t\t*********7.clear  student information****************\n");
+	printf("\t\t*********8.traverse student information**************\n");
 	printf("Are your want to be Continued.....?(Y-N)\n");
 	scanf("%c",&ch);
 		if( ch == 'N' || ch == 'n')
 			break;
 		printf("please enter your choice\n");
 		scanf("%d",&m);
-		if(m < 0 || m > 7)
+		if(m < 0 || m > 8)
 		{
-		printf("your choice is wrong ,please enter (1 - 7)\n");
+		printf("your choice is wrong ,please enter (1 - 8)\n");
 		scanf("%d",&m);
 		}
 	}

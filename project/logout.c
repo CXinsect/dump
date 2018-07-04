@@ -45,6 +45,8 @@ void logout(void)
 		 printf("\n");
 		fclose(fp1);
 		fclose(fp2);
+		c =  menu();
+		select_stu(c);
 	}
 	else
 	{
@@ -87,7 +89,8 @@ void logout(void)
 								       printf("The code is right\n");
 									fclose(fp1);
 									fclose(fp2);
-									break;
+									c =  menu();
+									select_stu(c);
 			   		       	 	  } 
 						   	else
 								   continue;
@@ -107,8 +110,6 @@ void logout(void)
 			exit(1);
 		}
 	}
-		c =  menu();
-		select_stu(c);
 
 }
 

@@ -13,19 +13,20 @@ int menu(void)
 	printf("\t\t*********6.sort   student information****************\n");
 	printf("\t\t*********7.save   student information****************\n");
 	printf("\t\t*********8.read   student information****************\n");
-	printf("\t\t*********9.traverse student information**************\n");
-	printf("\t\t*********10.logoue----------------out****************\n");
+	printf("\t\t*********9.clear  student information****************\n");
+	printf("\t\t*********10.traverse student information**************\n");
+	printf("\t\t*********11.logoue--out--system***********************\n");
         printf("\t\t********please enter your choices (1 - 10)**********\n");
 	printf("==========================================================================\n");
 	printf("Please enter your choice.....\n");
 	scanf("%d",&choice);
 	while(1)
 	{
-		if(choice > 0 && choice <= 10)
+		if(choice > 0 && choice <= 11)
 			break;
 		else
 		{
-			printf("your choice is wrong ,please enter (1 - 10)\n");
+			printf("your choice is wrong ,please enter (1 - 11)\n");
 			scanf("%d",&choice);
 		}
 	}
