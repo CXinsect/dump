@@ -12,12 +12,12 @@ void logout(void)
 	scanf("%c",&ch);
 	if( ch == 'Y' || ch == 'y')
 	{
-		if((fp1 = fopen("/tmp/temp","at")) == NULL)
+		if((fp1 = fopen("/home/temp","at")) == NULL)
 		{
 			printf("The file opening is wrong\n");
 			return;
 		}
-		if((fp2 = fopen("/tmp/temp1","at")) == NULL)
+		if((fp2 = fopen("/home/temp1","at")) == NULL)
 		{
 			printf("The file opening is wrong\n");
 			return;

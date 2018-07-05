@@ -11,7 +11,16 @@ void clear(PNODE pHead)
 	}
 	PNODE p = pHead->pRight;
 	PNODE q = NULL;
-	while(p != NULL)
+	printf("This is a danger manner,Are you sure?(Y-N)\n");
+	while(getchar() != '\n')
+		continue;
+	scanf("%c",&ch);
+	if(ch != 'y' || ch != 'Y')
+	{
+		m = menu();
+		select_stu(m);
+	}
+	while(p != pHead)
 	{
 		q = p->pRight;
 		free(p);
