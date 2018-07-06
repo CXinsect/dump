@@ -2,21 +2,20 @@
 int menu(void)
 {
 	int choice;
-	printf("==========================================================================\n");
-	printf("\t\t************This is a system for student*************\n");
-	printf("\t\t***************You Can modeif this*******************\n");
-	printf("\t\t*********1.append student information****************\n");
-	printf("\t\t*********2.delete student information****************\n");
-	printf("\t\t*********3.modify student information****************\n");
-	printf("\t\t*********4.insert student information****************\n");
-	printf("\t\t*********5.find   student information****************\n");
-	printf("\t\t*********6.sort   student information****************\n");
-	printf("\t\t*********7.save   student information****************\n");
-	printf("\t\t*********8.read   student information****************\n");
-	printf("\t\t*********9.clear  student information****************\n");
-	printf("\t\t*********10.traverse student information**************\n");
-	printf("\t\t*********11.logoue--out--system***********************\n");
-        printf("\t\t********please enter your choices (1 - 10)**********\n");
+	printf("========================================================================\n");
+	printf("=\t\t\tThis is a student managerment System\t\t=\n");
+	printf("=\t\t\t1.Add    student information\t\t\t=\n");
+	printf("=\t\t\t2.delete student information\t\t\t=\n");
+	printf("=\t\t\t3.modify student information\t\t\t=\n");
+	printf("=\t\t\t4.insert student information\t\t\t=\n");
+	printf("=\t\t\t5.search student information\t\t\t=\n");
+	printf("=\t\t\t6.sort   student information\t\t\t=\n");
+	printf("=\t\t\t7.save   student information\t\t\t=\n");
+	printf("=\t\t\t8.read   student information\t\t\t=\n");
+	printf("=\t\t\t9.clear  student information\t\t\t=\n");
+	printf("=\t\t\t10.traverse-student-information\t\t\t=\n");
+	printf("=\t\t\t11.login-----out------ystem \t\t\t=\n");
+        printf("=\t\t\tplease enter your choices (1 - 11)\t\t=\n");
 	printf("==========================================================================\n");
 	printf("Please enter your choice.....\n");
 	scanf("%d",&choice);
