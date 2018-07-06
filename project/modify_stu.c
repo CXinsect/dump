@@ -16,6 +16,8 @@ void modief_stu(PNODE pH)
 	printf("**1.with number\n");
 	printf("**2.with name  \n");
 	printf("**3.with getindex \n");
+	while(getchar() != '\n')
+		continue;
 	scanf("%d",&type);
 	while(1)
 	{

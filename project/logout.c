@@ -12,12 +12,12 @@ void logout(void)
 	scanf("%c",&ch);
 	if( ch == 'Y' || ch == 'y')
 	{
-		if((fp1 = fopen("/home/temp","at")) == NULL)
+		if((fp1 = fopen("/tmp/temp","at")) == NULL)
 		{
 			printf("The file opening is wrong\n");
 			return;
 		}
-		if((fp2 = fopen("/home/temp1","at")) == NULL)
+		if((fp2 = fopen("/tmp/temp1","at")) == NULL)
 		{
 			printf("The file opening is wrong\n");
 			return;
@@ -45,8 +45,7 @@ void logout(void)
 		 printf("\n");
 		fclose(fp1);
 		fclose(fp2);
-		c =  menu();
-		select_stu(c);
+		read_stu();
 	}
 	else
 	{
@@ -89,8 +88,7 @@ void logout(void)
 								       printf("The code is right\n");
 									fclose(fp1);
 									fclose(fp2);
-									c =  menu();
-									select_stu(c);
+									read_stu();
 			   		       	 	  } 
 						   	else
 								   continue;

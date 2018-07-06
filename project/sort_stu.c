@@ -14,7 +14,7 @@ void sort_stu(PNODE pH)
 	{
 		for(j = i+1,q = p->pRight;j< m;j++,q = q->pRight)
 		{
-			if(p->sum > q->sum)
+			if(p->sum < q->sum)
 			{
 				copy_stu(p,q);
 			       

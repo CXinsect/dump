@@ -36,7 +36,14 @@ void  insert_stu(PNODE pH)
 				pNew->sum += pNew->score[i];
 			}
 			pNew->average = pNew->sum / 3.0;
-	                pNew->index = getindexs(pH,pNew->sum);	
+	                pNew->index = getindexs(pH,pNew->sum);
+			PNODE w = pH->pRight;
+		/*	while(w != pH)
+			{
+				if(w->sum < pNew->sum)
+					w->index++;
+				w = w->pRight;
+			}	*/
 		       while( p->pRight != pH)
 			       p = p->pRight;
 		       pNew->pRight = p->pRight;

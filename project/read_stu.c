@@ -40,93 +40,103 @@ void read_stu(void)
 	pTail->pRight = pHead;
 	fclose(fp);
 	traverse_stu(pHead);
-	while(getchar() != '\n')
-		continue;
 	printf("If you want to change information in the file(y - n)\n");
 	scanf("%c",&ch);
-	if( ch == 'Y' || ch == 'y'){
-	printf("\t\t*********1.delete student information****************\n");
-	printf("\t\t*********2.modify student information****************\n");
-	printf("\t\t*********3.insert student information****************\n");
-	printf("\t\t*********4.find   student information****************\n");
-	printf("\t\t*********5.sort   student information****************\n");
-	printf("\t\t*********6.load   student information****************\n");
-	printf("\t\t*********7.clear  student information****************\n");
-	printf("\t\t*********8.traverse student information**************\n");
-	scanf("%d",&m);
-	while(1)
+	if( ch == 'Y' || ch == 'y')
 	{
-		if(m > 0 && m <= 8)
-			break;
+		printf("\t\t*********1.delete student information****************\n");
+		printf("\t\t*********2.modify student information****************\n");
+		printf("\t\t*********3.insert student information****************\n");
+		printf("\t\t*********4.find   student information****************\n");
+		printf("\t\t*********5.sort   student information****************\n");
+		printf("\t\t*********6.load   student information****************\n");
+		printf("\t\t*********7.clear  student information****************\n");
+		printf("\t\t*********8.traverse student information**************\n");
+		scanf("%d",&m);
+			while(1)
+			{
+				if(m > 0 && m <= 8)
+					break;
+				else
+				{
+					printf("your choice is wrong ,please enter (1 - 8)\n");
+					scanf("%d",&m);
+				}
+			}
+			while(1)
+			{
+	
+				switch(m)
+				{
+					case 1:
+	  					delate_stu(pHead);
+						break;
+					case 2:
+					        modief_stu(pHead);
+					       break;
+					case 3:
+					       insert_stu(pHead);
+					       break;
+					case 4:
+						find_stu(pHead);
+					       break;
+					case 5:
+					       sort_stu(pHead);
+					       break;
+					case 6:
+					       save_stu(pHead);
+					       break;
+					case 7:
+					       clear(pHead);
+					       break;
+					case 8:
+					       traverse_stu(pHead);
+					       break;
+					case 9:
+					       printf("Origin date is cleared\n");
+					       m = menu();
+					       select_stu(m);
+					       break;
+					default:
+					       printf("error\n");
+					       break;
+				}
+					while(getchar() != '\n')
+					continue;
+			printf("\t\t*********1.delate student information****************\n");
+			printf("\t\t*********2.modief student information****************\n");
+			printf("\t\t*********3.insert student information****************\n");
+			printf("\t\t*********4.find   student information****************\n");
+			printf("\t\t*********5.sort   student information****************\n");
+			printf("\t\t*********6.save   student information****************\n");
+			printf("\t\t*********7.clear  student information****************\n");
+			printf("\t\t*********8.traverse student information**************\n");
+			printf("\t\t*********9.back     to    main    menu***************\n");
+			printf("Are your want to be Continued.....?(Y-N)\n");
+			scanf("%c",&ch);
+			if( ch == 'N' || ch == 'n')
+				break;
+			printf("please enter your choice\n");
+			scanf("%d",&m);
+			if(m < 0 || m > 9)
+			{
+				printf("your choice is wrong ,please enter (1 - 9)\n");
+				scanf("%d",&m);
+			}
+		}
+	}
 		else
 		{
-			printf("your choice is wrong ,please enter (1 - 8)\n");
-			scanf("%d",&m);
+			printf("back to Main Menu successfully!\n");
+			m = menu();
+			select_stu(m);
 		}
-	}
-	while(1)
-	{
-
-		switch(m)
-		{
-		case 1:
-  			delate_stu(pHead);
-			break;
-		case 2:
-		        modief_stu(pHead);
-		       break;
-		case 3:
-		       insert_stu(pHead);
-		       break;
-		case 4:
-			find_stu(pHead);
-		       break;
-		case 5:
-		       sort_stu(pHead);
-		       break;
-		case 6:
-		       save_stu(pHead);
-		       break;
-		case 7:
-		       clear(pHead);
-		       break;
-		case 8:
-		       traverse_stu(pHead);
-		       break;
-		default:
-		       printf("error\n");
-			       break;
-		}
-	while(getchar() != '\n')
-		continue;
-	printf("\t\t*********1.delate student information****************\n");
-	printf("\t\t*********2.modief student information****************\n");
-	printf("\t\t*********3.insert student information****************\n");
-	printf("\t\t*********4.find   student information****************\n");
-	printf("\t\t*********5.sort   student information****************\n");
-	printf("\t\t*********6.save   student information****************\n");
-	printf("\t\t*********7.clear  student information****************\n");
-	printf("\t\t*********8.traverse student information**************\n");
-	printf("Are your want to be Continued.....?(Y-N)\n");
-	scanf("%c",&ch);
-		if( ch == 'N' || ch == 'n')
-			break;
-		printf("please enter your choice\n");
-		scanf("%d",&m);
-		if(m < 0 || m > 8)
-		{
-		printf("your choice is wrong ,please enter (1 - 8)\n");
-		scanf("%d",&m);
-		}
-	}
-	}
-	else
-		return;
 	}
 	else{
 		printf("please enter the date first\n");
 		m = menu();
 		select_stu(m);
 	}
+	printf("Orihin data is cleared\n");
 	return;
 }
