@@ -48,6 +48,7 @@
 #define SEND_FILE_RPLY 25 //发文件请求
 #define WRONG_CODE 26       //密码问题
 #define LOOK_PRIVATE 27    //查看私聊记录
+#define LOOK_GROUP 28      // 查看群聊记录
 pthread_mutex_t mutex;
 /*用户登录信息*/
 struct usr_info
