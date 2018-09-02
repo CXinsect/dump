@@ -796,6 +796,7 @@ void *analysis_pack(void *arg)
                 printf("%s已被解除禁言\n", cJSON_GetObjectItem(node, "content")->valuestring);
                 break;
             case NO_SPEAKING:
+            printf("hhh\n");
                 printf("BIngo,%s\n", cJSON_GetObjectItem(node, "content")->valuestring);
                 break;
             case CREAT_GROUP:

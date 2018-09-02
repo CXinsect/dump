@@ -678,16 +678,25 @@ int group_set_no_speaking(char *string, int sockfd)
         }
         else
         {
-           /* cJSON *json = cJSON_AddNumberToObject(json, "signal", NO_SPEAKING);
-            cJSON_AddNumberToObject(json, "id", uid);
+            cJSON *json = cJSON_CreateObject();
+            cJSON_AddNumberToObject(json, "signal", NO_SPEAKING);
+            cJSON_AddStringToObject(json,"content","success");
             char *pass = cJSON_PrintUnformatted(json);
             add_file_size(sockfd, pass);
-            cJSON_Delete(json);*/
+            cJSON_Delete(json);
             return 1;
         }
     }
     else
-        return 0;
+    {
+            cJSON *json = cJSON_CreateObject();
+            cJSON_AddNumberToObject(json, "signal", NO_SPEAKING);
+            cJSON_AddStringToObject(json, "content","Permission denied");
+            char *pass = cJSON_PrintUnformatted(json);
+            add_file_size(sockfd, pass);
+            cJSON_Delete(json);
+            return 0;
+    }
 }
 /*核查成员状态是否被禁言*/
 int group_check_no_speaking(int id, int gid)
