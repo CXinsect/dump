@@ -941,21 +941,14 @@ int record_group_look(int client, char *string)
 /*接收文件*/
 int file_request(char *string)
 {
-    printf("lll%s\n", string);
     cJSON *node = cJSON_Parse(string);
     int fid = cJSON_GetObjectItem(node, "fid")->valueint;
-    printf("not guys\n");
-    if (path == 1)
-    {
-        char *recv = get_guys_sockfd(fid);
-        cJSON *tnode = cJSON_Parse(recv);
-        int f_sock = cJSON_GetObjectItem(tnode, "sockfd")->valueint;
-        S_sock = f_sock;
-        cJSON_Delete(tnode);
-        path++;
-    }
+    char *recv = get_guys_sockfd(fid);
+    cJSON *tnode = cJSON_Parse(recv);
+    int f_sock = cJSON_GetObjectItem(tnode, "sockfd")->valueint;
+    cJSON_Delete(tnode);
     char *pass = cJSON_PrintUnformatted(node);
-    add_file_size(S_sock, pass);
+    add_file_size(f_sock, pass);
     cJSON_Delete(node);
 }
 /**********************注册********************/
@@ -1105,10 +1098,10 @@ void *handle(void *arg)
         chat_group(msg->buf, m);
         break;
     case NO_SPEAKING:
-            group_set_no_speaking(msg->buf, m);
+        group_set_no_speaking(msg->buf, m);
         break;
     case SPEAKING:
-            group_cancle_no_speaking(msg->buf, m);
+        group_cancle_no_speaking(msg->buf, m);
         break;
     case GET_FRI_LIST:
         get_friend_list(cJSON_GetObjectItem(msg->node, "id")->valueint, m);
@@ -1135,7 +1128,7 @@ void *handle(void *arg)
                      cJSON_GetObjectItem(msg->node, "recv_id")->valueint);
         break;
     case LOOK_GROUP:
-        record_group_look(m,msg->buf);
+        record_group_look(m, msg->buf);
     default:
         printf("敬请期待\n");
         break;
@@ -1244,16 +1237,16 @@ int main(int argc, char *argv[])
                         number -= aaa1;
                         recv_nums111 += aaa1;
                     }
-                        printf("number  = %d\n", number);
-                        cJSON *node = cJSON_Parse(temp);
-                        MSG *msg = (MSG *)malloc(sizeof(MSG));
-                        msg->node = node;
-                        printf("<<====\n");
-                        strcpy(msg->buf, temp);
-                        printf("<<====\n");
-                        msg->fd = events[i].data.fd;
-                     pthread_t thid;
-                     pthread_create(&thid, NULL, handle, (void *)msg);
+                    printf("number  = %d\n", number);
+                    cJSON *node = cJSON_Parse(temp);
+                    MSG *msg = (MSG *)malloc(sizeof(MSG));
+                    msg->node = node;
+                    printf("<<====\n");
+                    strcpy(msg->buf, temp);
+                    printf("<<====\n");
+                    msg->fd = events[i].data.fd;
+                    pthread_t thid;
+                    pthread_create(&thid, NULL, handle, (void *)msg);
                     // printf("ddd\n");
                     // free(msg);         不能释放
                 }
