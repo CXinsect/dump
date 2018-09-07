@@ -45,6 +45,7 @@ int uid;
 int count;
 int flag = 0;
 int i = 0;
+int c4 = 0;
 pthread_mutex_t mutex;
 typedef struct package
 {
@@ -438,7 +439,7 @@ void chat_private(int sockfd, int id)
         scanf("%s", msg);
         cJSON_AddStringToObject(json, "content", msg);
         char *pass = cJSON_PrintUnformatted(json);
-       // printf("bbb%s\n", pass);
+        // printf("bbb%s\n", pass);
         add_file_size(sockfd, pass);
         cJSON_Delete(json);
         if (strcmp(msg, "bye") == 0)
@@ -552,7 +553,7 @@ int get_file_size(char *filename)
 void send_file(int sockfd, int uid)
 {
     int fd;
-    char filename[40], buf[900] = {0}, temp[1500] = {0};
+    char filename[40], buf[163840] = {0}, temp[260000] = {0};
     int fid, size;
     printf("please enter the id tha you want to put\n");
     scanf("%d", &fid);
@@ -579,7 +580,7 @@ void send_file(int sockfd, int uid)
         char *pass = cJSON_PrintUnformatted(json);
         printf("pass%d\n", strlen(pass));
         cJSON_Delete(json);
-        usleep(7000);
+        usleep(100000);
         add_file_size(sockfd, pass);
         printf("文件发送成功\n");
         if (size < (int)sizeof(buf))
@@ -592,17 +593,15 @@ void send_file(int sockfd, int uid)
 /*收文件函数*/
 void recv_file(cJSON *node)
 {
-    printf("file___==\n");
     int fp = open("tmp", O_CREAT | O_RDWR | O_APPEND, 0777);
     if (fp == -1)
         printf("创建文件失败\n");
-    char filename[1024], buf[1500] = {0}, temp[900] = {0};
+    char filename[1024], buf[260000] = {0}, temp[163840] = {0};
     int fid;
     int size;
     bzero(&buf, sizeof(buf));
     strcat(buf, cJSON_GetObjectItem(node, "base")->valuestring);
     size = cJSON_GetObjectItem(node, "f_size")->valueint;
-    printf("===<<<>>>\n");
     //解码
     base64_decode(buf, (unsigned char *)temp);
     write(fp, temp, size);
@@ -648,15 +647,15 @@ void menu_select(int sockfd, int id)
         printf("\033[1m\033[;31m\t\t\t*********1.删除好友 2.添加好友********\t\t\t\033[0m\n");
         printf("\033[1m\033[;32m\t\t\t*********3.回复好友 4.获取好友列表*****\t\t\t\033[0m\n");
         printf("\033[1m\033[;33m\t\t\t*********5.私聊     16.私聊记录*****\t\t\t\033[0m\n");
-        printf("\033[1m\033[;34m\t\t\t=============||群管理||==================\t\t\t\033[0m\n");       
+        printf("\033[1m\033[;34m\t\t\t=============||群管理||==================\t\t\t\033[0m\n");
         printf("\033[1m\033[;35m\t\t\t*********6.创群     7.群聊***********\t\t\t\033[0m\n");
         printf("\033[1m\033[;36m\t\t\t*********8.禁言     9.解除禁言********\t\t\t\033[0m\n");
         printf("\033[1m\033[;38m\t\t\t*********10.获得群好友列表************\t\t\t\033[0m\n");
         printf("\033[1m\033[;38m\t\t\t*********11.获得用户所在群列表*********\t\t\t\033[0m\n");
         printf("\033[1m\033[;39m\t\t\t*********12.删除群成员 13.退群*********\t\t\t\033[0m\n");
         printf("\033[1m\033[;39m\t\t\t*********14.加群  17.查看群聊记录*********\t\t\t\033[0m\n");
-        printf("\033[1m\033[;31m\t\t\t*********15.上传文件          *********\t\t\t\033[0m\n");
-        printf("\033[1m\033[;33m\t\t\t*********18.退出*****\t\t\t\033[0m\n");
+        printf("\033[1m\033[;31m\t\t\t*********15.上传文件       ************\t\t\t\033[0m\n");
+        printf("\033[1m\033[;33m\t\t\t*********18.退出           *****\t\t\t\033[0m\n");
         int choice;
         printf("\t\t\t请输入你的选择:");
         scanf("%d", &choice);
@@ -737,7 +736,6 @@ void *analysis_pack(void *arg)
         {
             if (recv_num == 4)
             {
-                printf("goto ok!\n");
                 break;
             }
             int aaaaa = recv(sockfd, (char *)&number + recv_num, num_sum, 0);
@@ -786,7 +784,7 @@ void *analysis_pack(void *arg)
                 break;
             case CHAT_GROUP:
                 printf("==>>群聊模式\n");
-                printf("\033[1m\033[40;33m%d 发来一条消息\033[0m\t", cJSON_GetObjectItem(node, "uid")->valueint);                
+                printf("\033[1m\033[40;33m%d 发来一条消息\033[0m\t", cJSON_GetObjectItem(node, "uid")->valueint);
                 printf("\033[1m\033[40;32m%s\033[0m\n", cJSON_GetObjectItem(node, "content")->valuestring);
                 break;
             case SPEAKING:
@@ -833,7 +831,11 @@ void *analysis_pack(void *arg)
                 printf("\033[1m\033[40;30m%s\033[0m\n", cJSON_GetObjectItem(node, "content")->valuestring);
                 break;
             case SEND_FILE:
-                printf("\033[1m\033[40;31m文件请在本地查看\033[0m\n");
+                if (c4 == 0)
+                {
+                    printf("\n\033[1m\033[40;31m文件请在本地查看\033[0m\n");
+                    c4++;
+                }
                 recv_file(node);
                 break;
             case WRONG_CODE:
@@ -890,10 +892,10 @@ void login(int sockfd)
 void menu_main(int sockfd)
 {
     int i = 0;
-    printf("\t\t\t*********1.login*************\t\t\t\n");
-    printf("\t\t\t*********2.register**********\t\t\t\n");
-    printf("\t\t\t*********3.back_passwd*******\t\t\t\n");
-    printf("\t\t\t*********4.exit**************\t\t\t\n");
+    printf("\033[1m\033[;31m\t\t\t********1.登录********\t\t\t\033[0m\t\t\t\n");
+    printf("\033[1m\033[;32m\t\t\t********2.注册********\t\t\t\033[0m\t\t\t\n");
+    printf("\033[1m\033[;33m\t\t\t********3.找回密码********\t\t\t\033[0m\t\t\t\n");
+    printf("\033[1m\033[;34m\t\t\t********4.退出********\t\t\t\033[0m\t\t\t\n");
     int choice;
     printf("\t\t\t请输入你的选择:");
     scanf("%d", &choice);
