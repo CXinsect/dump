@@ -63,6 +63,8 @@ struct usr_info
 struct usr_info usr[USR_NUM];
 int usr_number;
 int uid;
+int path = 1;
+int S_sock;
 /*数据包信息*/
 typedef struct package
 {
