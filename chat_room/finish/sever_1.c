@@ -256,7 +256,7 @@ char *get_guys_sockfd(int recv_id)
     MYSQL_ROW row;
     bzero(&sql_str, 100);
     sprintf(sql_str, "select sockfd from usr_info where id='%d'", recv_id);
-   // pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mutex);
     int ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
     if (ret != 0)
     {
@@ -277,7 +277,7 @@ char *get_guys_sockfd(int recv_id)
         printf("获取套接字失败\n");
     cJSON_Delete(json);
     mysql_free_result(res);
- //   pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mutex);
     return pass;
 }
 /*********************************添加好友**************************************/
@@ -369,6 +369,7 @@ int add_group(char *string, int sockfd)
         printf("add_group:%s\n", mysql_error(&mysql));
         return 0;
     }
+    printf("jjjjjj\n");
     cJSON_Delete(node);
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "signal", ADD_GROUP);
@@ -736,7 +737,6 @@ int group_cancle_no_speaking(char *string, int sockfd)
     cJSON_Delete(node);
     if (check_group_owner(id, gid))
     {
-        printf("");
         sprintf(sql_str, "update group_info set member = '%d' where (gid = '%d' and id = '%d')", SPEAKING, gid, uid);
         int ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
         if (ret != 0)
@@ -818,7 +818,7 @@ int add_group_member(int id, int gid, char *string)
 int record_group(int gid, int id, char *content)
 {
     bzero(&sql_str, 100);
-    char save_time[20];
+    char save_time[40];
     time_t timep;
     time(&timep);
     strcpy(save_time, ctime(&timep));
@@ -847,12 +847,14 @@ int chat_group(char *string, int sockfd)
         cJSON_AddNumberToObject(root, "signal", NO_SPEAKING);
         cJSON_AddStringToObject(root, "content", "Lock");
         char *pass = cJSON_PrintUnformatted(root);
+        cJSON_Delete(root);
         add_file_size(sockfd, pass);
         return 1;
     }
     else
     {
         bzero(&sql_str, 100);
+        printf("qqqqqqqqqqqqqqqqqq\n");
         sprintf(sql_str, "select * from group_info where gid='%d' and id != '%d'", gid, id);
         int ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
         if (ret != 0)
@@ -866,7 +868,7 @@ int chat_group(char *string, int sockfd)
         {
             cJSON *json = cJSON_CreateObject();
             cJSON_AddNumberToObject(json, "signal", CHAT_GROUP);
-            cJSON_AddItemToObject(json, "uid", cJSON_CreateNumber(atoi(row[4])));
+            cJSON_AddNumberToObject(json, "uid",id);
             cJSON_AddStringToObject(json, "content", cJSON_GetObjectItem(node, "content")->valuestring);
             if (record_group(atoi(row[0]), id, cJSON_GetObjectItem(json, "content")->valuestring))
                 printf("群聊记录保存成功\n");
@@ -1067,7 +1069,7 @@ void login(int client, char *string) //登录必须与连接放在一块不然�
     }
     cJSON_Delete(json);
 }
-/*void *handle(void *arg)
+void *handle(void *arg)
 { //msg->buf 保存原始的数据包
     MSG *msg = (MSG *)malloc(sizeof(MSG));
     msg = (MSG *)arg;
@@ -1143,7 +1145,7 @@ void login(int client, char *string) //登录必须与连接放在一块不然�
     //pthread_mutex_unlock(&mutex);
     free(msg);
     return NULL;
-}*/
+}
 int main(int argc, char *argv[])
 {
     int sockfd;
@@ -1252,77 +1254,9 @@ int main(int argc, char *argv[])
                     strcpy(msg->buf, temp);
                     printf("<<====\n");
                     msg->fd = events[i].data.fd;
-                    int item = cJSON_GetObjectItem(msg->node, "signal")->valueint;
-                    printf("%d\n", item);
-                    printf("eee\n");
-                    int m = msg->fd;
-                    switch (item)
-                    {
-                    case LOGIN:
-                        login(m, msg->buf);
-                        break;
-                    case REGISTER:
-                        reg(m, msg->buf);
-                        break;
-                    case DELETE_FRIEND:
-                        delate_usr(cJSON_GetObjectItem(msg->node, "id")->valueint, m);
-                        break;
-                    case CHAT_PRI:
-                        chat_private(m, msg->buf);
-                        break;
-                    case ADD_FRIEND:
-                        add_friend_add(m, msg->buf);
-                        break;
-                    case FRIEND_REPLY:
-                        add_friend_reply(m, msg->buf);
-                        break;
-                    case CREAT_GROUP:
-                        mysql_create_group(cJSON_GetObjectItem(msg->node, "id")->valueint,
-                                           cJSON_GetObjectItem(msg->node, "gid")->valueint, msg->buf, m);
-                        break;
-                    case CHAT_GROUP:
-                        chat_group(msg->buf, m);
-                        break;
-                    case NO_SPEAKING:
-                        group_set_no_speaking(msg->buf, m);
-                        break;
-                    case SPEAKING:
-                        group_cancle_no_speaking(msg->buf, m);
-                        break;
-                    case GET_FRI_LIST:
-                        get_friend_list(cJSON_GetObjectItem(msg->node, "id")->valueint, m);
-                        break;
-                    case GET_GROUP_LIST:
-                        get_group_list(m, cJSON_GetObjectItem(msg->node, "gid")->valueint);
-                        break;
-                    case GROUP_USR_LST:
-                        group_usr_lsit(m, cJSON_GetObjectItem(msg->node, "id")->valueint);
-                        break;
-                    case QUIT_GROUP_T:
-                        group_delete(cJSON_GetObjectItem(msg->node, "uid")->valueint,
-                                     cJSON_GetObjectItem(msg->node, "gid")->valueint, m);
-                        break;
-                    case ADD_GROUP:
-                        add_group(msg->buf, m);
-                        break;
-                    case SEND_FILE:
-                        file_request(msg->buf);
-                        //sleep(1);
-                        break;
-                    case LOOK_PRIVATE:
-                        look_private(m, cJSON_GetObjectItem(msg->node, "send_id")->valueint,
-                                     cJSON_GetObjectItem(msg->node, "recv_id")->valueint);
-                        break;
-                    case LOOK_GROUP:
-                        record_group_look(m, msg->buf);
-                    default:
-                        printf("敬请期待\n");
-                        break;
-                    }
-                    //pthread_mutex_unlock(&mutex);
-                    free(msg);
-                    // pthread_t thid;
-                    // pthread_create(&thid, NULL, handle, (void *)msg);
+                    
+                     pthread_t thid;
+                     pthread_create(&thid, NULL, handle, (void *)msg);
                     // printf("ddd\n");
                     // free(msg);         不能释放
                 }
