@@ -42,7 +42,7 @@ int connect_to_mysql(void)
 /***********************快递员********************************/
 int add_file_size(int fd, char *pass) //防止粘包现象的发生
 {
-    pthread_mutex_lock(&mutex);
+    //pthread_mutex_lock(&mutex);
     int m = strlen(pass) + 4;
     char temp_pack[m + 1];
     temp_pack[m] = 0;
@@ -50,7 +50,7 @@ int add_file_size(int fd, char *pass) //防止粘包现象的发生
     *(int *)temp_pack = strlen(pass);
     // printf("%s\n", pass);
     send(fd, &temp_pack, m, 0);
-    pthread_mutex_unlock(&mutex);
+  //  pthread_mutex_unlock(&mutex);
     return 1;
 }
 /*保存数据到数据库*/
@@ -256,7 +256,7 @@ char *get_guys_sockfd(int recv_id)
     MYSQL_ROW row;
     bzero(&sql_str, 100);
     sprintf(sql_str, "select sockfd from usr_info where id='%d'", recv_id);
-    pthread_mutex_lock(&mutex);
+   // pthread_mutex_lock(&mutex);
     int ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
     if (ret != 0)
     {
@@ -277,7 +277,7 @@ char *get_guys_sockfd(int recv_id)
         printf("获取套接字失败\n");
     cJSON_Delete(json);
     mysql_free_result(res);
-    pthread_mutex_unlock(&mutex);
+ //   pthread_mutex_unlock(&mutex);
     return pass;
 }
 /*********************************添加好友**************************************/
@@ -526,13 +526,15 @@ int chat_private(int sockfd, char *string)
         printf("保存失败\n");
     }
     char *recv = get_guys_sockfd(recv_fd);
+    printf("hhhhhhhhhh\n");
     cJSON *tnode = cJSON_Parse(recv);
     int f_sock = cJSON_GetObjectItem(tnode, "sockfd")->valueint;
     cJSON_Delete(tnode);
     printf("recv:%d\n", recv_fd);
     printf("%d\n", f_sock);
-    if (strcmp(item, "bye") != 0)
+    
         add_file_size(f_sock, pass);
+        printf("yyyyyyyyyy\n");
     cJSON_Delete(node);
     return 1;
 }
