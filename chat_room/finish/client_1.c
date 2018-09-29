@@ -567,7 +567,11 @@ void send_file(int sockfd, int uid)
     while (1)
     {
         memset(buf, 0, sizeof(buf));
-        size = read(fd, buf, sizeof(buf));
+        if((size = read(fd, buf, sizeof(buf))) == 0)
+        {
+            break;
+        }
+        
         //  lseek(fd,size,SEEK_CUR);
         base64_encode((const unsigned char *)buf, temp, size);
         cJSON *json = cJSON_CreateObject();
@@ -582,11 +586,12 @@ void send_file(int sockfd, int uid)
         cJSON_Delete(json);
         usleep(100000);
         add_file_size(sockfd, pass);
-        printf("文件发送成功\n");
-        if (size < (int)sizeof(buf))
-            break;
+       //s printf("文件发送成功\n");
+        //if (size < (int)sizeof(buf))
+        //    break;
+            free(pass);
     }
-    printf("文件发送成功\n");
+    printf("whywhyehyy文件发送成功\n");
     close(fd);
     return;
 }
@@ -760,6 +765,14 @@ void *analysis_pack(void *arg)
             cJSON *node = cJSON_Parse(temp);
             int item = cJSON_GetObjectItem(node, "signal")->valueint;
             int choice;
+            if(item == LOGIN)
+            {
+                flag = 1;
+            }
+            else
+            {
+                flag = -1;
+            }
             switch (item)
             {
             case CHAT_PRI:
@@ -947,10 +960,21 @@ int main(int argc, char *argv[])
     while (1)
     {
         menu_main(sockfd);
-        usleep(1000000);
-        printf("%d\n", flag);
-        if (flag == 1)
+        //usleep(100000);
+        printf("flag = %d\n", flag);
+        while(flag == 0)
+        {
+            usleep(100);
+        }
+        if(flag == 1)
+        {
             break;
+        }
+        else
+        {
+            continue;
+        }
+
     }
     while (1)
         menu_select(sockfd, uid);

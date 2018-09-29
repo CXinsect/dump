@@ -50,7 +50,7 @@ int add_file_size(int fd, char *pass) //防止粘包现象的发生
     *(int *)temp_pack = strlen(pass);
     // printf("%s\n", pass);
     send(fd, &temp_pack, m, 0);
-  //  pthread_mutex_unlock(&mutex);
+    //  pthread_mutex_unlock(&mutex);
     return 1;
 }
 /*保存数据到数据库*/
@@ -90,7 +90,8 @@ int find_usr(int id)
 int modify_status(int id, int status)
 {
     bzero(&sql_str, 100);
-    sprintf(sql_str, "update usr_info set status='%d' where id='%d'", status, id);
+    sprintf(sql_str, "update usr_info set status='%d' where sockfd='%d';", status, id);
+    printf( "update usr_info set status='%d' where sockfd='%d';\n", status, id);
     int ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
     if (ret != 0)
     {
@@ -119,6 +120,7 @@ int get_status(int id)
     MYSQL_RES *res;
     MYSQL_ROW row;
     bzero(&sql_str, 100);
+
     sprintf(sql_str, "select status from usr_info where id='%d'", id);
     int ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
     if (ret != 0)
@@ -129,9 +131,10 @@ int get_status(int id)
     res = mysql_store_result(&mysql);
     row = mysql_fetch_row(res);
     int m;
+    printf("2222\n");
     if (row)
     {
-        if (atoi(row[4]) == 1)
+        if (atoi(row[0]) == 2)
             m = 1;
         else
             m = 0;
@@ -256,7 +259,7 @@ char *get_guys_sockfd(int recv_id)
     MYSQL_ROW row;
     bzero(&sql_str, 100);
     sprintf(sql_str, "select sockfd from usr_info where id='%d'", recv_id);
-    pthread_mutex_lock(&mutex);
+    //  pthread_mutex_lock(&mutex);
     int ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
     if (ret != 0)
     {
@@ -274,10 +277,15 @@ char *get_guys_sockfd(int recv_id)
         pass = cJSON_PrintUnformatted(json);
     }
     else
+    {
         printf("获取套接字失败\n");
+        cJSON_Delete(json);
+        mysql_free_result(res);
+        return NULL;
+    }
     cJSON_Delete(json);
     mysql_free_result(res);
-    pthread_mutex_unlock(&mutex);
+    //  pthread_mutex_unlock(&mutex);
     return pass;
 }
 /*********************************添加好友**************************************/
@@ -496,6 +504,41 @@ int look_private(int client, int send_id, int recv_id)
     }
     return 1;
 }
+void down_line(int client,int id)
+{
+    bzero(&sql_str, 100);
+    sprintf(sql_str, "select * from record_private where rid='%d' and status='-1';",id);
+    printf("select * from record_private where (rid='%d' and status='-1';\n",id);
+    int ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
+    if (ret != 0)
+    {
+        printf("look_private:%s\n", mysql_error(&mysql));
+        return;
+    }
+    MYSQL_RES *res = mysql_store_result(&mysql);
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(res)))
+    {
+        cJSON *node = cJSON_CreateObject();
+        cJSON_AddNumberToObject(node,"signal",CHAT_PRI);
+        cJSON_AddNumberToObject(node, "send_fd", atoi(row[0]));
+        cJSON_AddNumberToObject(node, "recv_id", atoi(row[1]));
+        cJSON_AddStringToObject(node, "content", row[2]);
+        cJSON_AddStringToObject(node, "time", row[3]);
+        char *pass = cJSON_PrintUnformatted(node);
+        add_file_size(client, pass);
+        cJSON_Delete(node);
+    }
+    sprintf(sql_str, "delete from record_private where rid='%d' and status='-1';",id);
+     ret = mysql_real_query(&mysql, sql_str, strlen(sql_str));
+    if (ret != 0)
+    {
+        printf("look_private:%s\n", mysql_error(&mysql));
+        return;
+    }
+    return;
+    
+}
 /*梦寐中的私聊（测试版）*/
 int chat_private(int sockfd, char *string)
 {
@@ -511,31 +554,48 @@ int chat_private(int sockfd, char *string)
     printf("cc%d\n", send_fd);
     time_t timep;
     time(&timep);
+
     strcpy(save_time, ctime(&timep));
     int len = strlen(save_time);
     save_time[len - 1] = '\0';
+
     cJSON_AddStringToObject(node, "time", save_time);
     cJSON_AddStringToObject(rnode, "time", save_time);
+
     char *item = cJSON_GetObjectItem(node, "content")->valuestring;
     cJSON_AddStringToObject(rnode, "content", item);
+
     char *pass = cJSON_PrintUnformatted(node);
     char *passing = cJSON_PrintUnformatted(rnode);
+
+    char *recv = get_guys_sockfd(recv_fd);
+    cJSON *tnode = cJSON_Parse(recv);
+    int f_sock = cJSON_GetObjectItem(tnode, "sockfd")->valueint;
+    //9.29gai
+
     if (record_private(send_fd, recv_fd, passing, 1))
         printf("记录保存成功\n");
     else
     {
         printf("保存失败\n");
     }
-    char *recv = get_guys_sockfd(recv_fd);
+    if (get_status(recv_fd))
+    {
+        printf("8\n");
+        if (record_private(send_fd, recv_fd, passing, -1))
+        printf("记录保存成功\n");
+        else
+        {
+            printf("保存失败\n");
+        }
+    }
     printf("hhhhhhhhhh\n");
-    cJSON *tnode = cJSON_Parse(recv);
-    int f_sock = cJSON_GetObjectItem(tnode, "sockfd")->valueint;
     cJSON_Delete(tnode);
     printf("recv:%d\n", recv_fd);
     printf("%d\n", f_sock);
-    
-        add_file_size(f_sock, pass);
-        printf("yyyyyyyyyy\n");
+
+    add_file_size(f_sock, pass);
+    printf("yyyyyyyyyy\n");
     cJSON_Delete(node);
     return 1;
 }
@@ -868,7 +928,7 @@ int chat_group(char *string, int sockfd)
         {
             cJSON *json = cJSON_CreateObject();
             cJSON_AddNumberToObject(json, "signal", CHAT_GROUP);
-            cJSON_AddNumberToObject(json, "uid",id);
+            cJSON_AddNumberToObject(json, "uid", id);
             cJSON_AddStringToObject(json, "content", cJSON_GetObjectItem(node, "content")->valuestring);
             if (record_group(atoi(row[0]), id, cJSON_GetObjectItem(json, "content")->valuestring))
                 printf("群聊记录保存成功\n");
@@ -956,9 +1016,15 @@ int file_request(char *string)
         cJSON_Delete(tnode);
         path++;
     }
+    printf("1\n");
     char *pass = cJSON_PrintUnformatted(node);
+    printf("2\n");
     add_file_size(S_sock, pass);
+    printf("3\n");
+    free(pass);
+    printf("4\n");
     cJSON_Delete(node);
+    printf("5\n");
 }
 /**********************注册********************/
 void reg(int client, char *string)
@@ -1050,6 +1116,7 @@ void login(int client, char *string) //登录必须与连接放在一块不然�
                 cJSON_AddStringToObject(json, "content", "login successfully!!");
                 char *pass = cJSON_PrintUnformatted(json);
                 add_file_size(client, pass);
+                down_line(client,item);                
             }
             else
             {
@@ -1070,13 +1137,22 @@ void login(int client, char *string) //登录必须与连接放在一块不然�
     cJSON_Delete(json);
 }
 void *handle(void *arg)
-{ //msg->buf 保存原始的数据包
-    MSG *msg = (MSG *)malloc(sizeof(MSG));
-    msg = (MSG *)arg;
+{
+    if (arg == NULL || strlen(arg) == 0)
+    {
+        printf("i'm empty!!!!\n");
+        return 0;
+    }
+    //msg->buf 保存原始的数据包
+    //MSG *msg = (MSG *)malloc(sizeof(MSG));
+    pthread_mutex_lock(&mutex);
+    MSG *msg = (MSG *)arg;
     //    pthread_mutex_lock(&mutex);
     printf("yes\n");
+    printf("agrlen = %d\n", strlen(arg));
     int item = cJSON_GetObjectItem(msg->node, "signal")->valueint;
-    printf("%d\n", item);
+
+    printf("item = %d\n", item);
     printf("eee\n");
     int m = msg->fd;
     switch (item)
@@ -1107,10 +1183,10 @@ void *handle(void *arg)
         chat_group(msg->buf, m);
         break;
     case NO_SPEAKING:
-            group_set_no_speaking(msg->buf, m);
+        group_set_no_speaking(msg->buf, m);
         break;
     case SPEAKING:
-            group_cancle_no_speaking(msg->buf, m);
+        group_cancle_no_speaking(msg->buf, m);
         break;
     case GET_FRI_LIST:
         get_friend_list(cJSON_GetObjectItem(msg->node, "id")->valueint, m);
@@ -1137,13 +1213,14 @@ void *handle(void *arg)
                      cJSON_GetObjectItem(msg->node, "recv_id")->valueint);
         break;
     case LOOK_GROUP:
-        record_group_look(m,msg->buf);
+        record_group_look(m, msg->buf);
     default:
         printf("敬请期待\n");
         break;
     }
     //pthread_mutex_unlock(&mutex);
     free(msg);
+    pthread_mutex_unlock(&mutex);
     return NULL;
 }
 int main(int argc, char *argv[])
@@ -1221,9 +1298,7 @@ int main(int argc, char *argv[])
                 if (recv_num == 0)
                 {
                     printf("用户已下线\n");
-                    printf("%d\n", usr_number);
                     modify_status(events[i].data.fd, OUT_LINE); //更改用户为离线状态
-                    usr_number--;
                     ev.data.fd = events[i].data.fd;
                     ev.events = EPOLL_CTL_DEL;
                     close(events[i].data.fd);
@@ -1248,17 +1323,18 @@ int main(int argc, char *argv[])
                     }
                     printf("number  = %d\n", number);
                     cJSON *node = cJSON_Parse(temp);
-                    MSG *msg = (MSG *)malloc(sizeof(MSG));
+                    MSG *msg = NULL;
+                    msg = (MSG *)malloc(sizeof(MSG));
                     msg->node = node;
                     printf("<<====\n");
                     strcpy(msg->buf, temp);
                     printf("<<====\n");
                     msg->fd = events[i].data.fd;
-                    
-                     pthread_t thid;
-                     pthread_create(&thid, NULL, handle, (void *)msg);
+
+                    pthread_t thid;
+                    pthread_create(&thid, NULL, handle, (void *)msg);
                     // printf("ddd\n");
-                    // free(msg);         不能释放
+                    //free(msg);         不能释放
                 }
             }
         }
